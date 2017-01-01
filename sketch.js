@@ -1,13 +1,16 @@
 var turret;
 var gravity;
 var target;
+var wall;
 
 function setup() {
   createCanvas(500,500);
 
   turret = new Turret();
-  createTarget();
+  wall = new Wall(floor(width/2) - 20, floor(height/2), 40, floor(height/2));
   gravity = createVector(0, 0.1);
+
+  createTarget();
 }
 
 function draw() {
@@ -26,6 +29,7 @@ function draw() {
   turret.update();
   turret.show();
   target.show();
+  wall.show();
 }
 
 function createTarget() {
@@ -33,7 +37,22 @@ function createTarget() {
 }
 
 function mousePressed() {
-  turret.fire();
+  var maxC = 400;
+  var maxV = -35;
+
+  var x1 = 0;
+  var x2 = mouseX;
+  var y1 = -height;
+  var y2 = mouseY;
+  var a = x2 - x1;
+  var b = -y1 - y2;
+  var c = sqrt(a*a + b*b);
+
+  if (c > maxC) {
+    c = maxC;
+  }
+
+  turret.fire((c/maxC)*maxV);
 }
 
 function mouseMoved() {

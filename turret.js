@@ -4,15 +4,21 @@ function Turret() {
   this.angle = 45;
   this.bullets = [];
 
-  this.fire = function () {
-    var bullet = new Bullet(this.pos.x + floor(this.size/2), this.pos.y + floor(this.size/2), this.angle);
+  this.fire = function (velY) {
+    var bullet = new Bullet(this.pos.x + floor(this.size/2), this.pos.y + floor(this.size/2), velY, this.angle);
     this.bullets.push(bullet);
   }
 
   this.update = function () {
     for (var i = 0; i < this.bullets.length; i++) {
-      this.bullets[i].applyForce(gravity);
-      this.bullets[i].update();
+      var bullet = this.bullets[i];
+
+      if (wall.contains(bullet.pos.x, bullet.pos.y)) {
+        bullet.bounce();
+      }
+
+      bullet.applyGravity();
+      bullet.update();
     }
   }
 
