@@ -23,9 +23,11 @@ function Turret() {
   }
 
   this.show = function () {
-    fill(255);
-    rect(this.pos.x,this.pos.y,this.size,this.size);
+    for (var i = 0; i < this.bullets.length; i++) {
+      this.bullets[i].show();
+    }
 
+    //turret gun
     push();
     rectMode(CENTER);
     translate(this.pos.x+20,this.pos.y+20);
@@ -33,8 +35,11 @@ function Turret() {
     rect(0,0,20,100);
     pop();
 
-    for (var i = 0; i < this.bullets.length; i++) {
-      this.bullets[i].show();
-    }
+    //turret base
+    push();
+    noStroke();
+    fill('grey');
+    rect(this.pos.x,this.pos.y,this.size,this.size);
+    pop();
   }
 }

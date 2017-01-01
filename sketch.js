@@ -34,6 +34,9 @@ function draw() {
 
 function createTarget() {
   target = new Target(random(floor(width/2),width),random(50,height));
+  if (wall.contains(target.x, target.y)) {
+    createTarget();
+  }
 }
 
 function mousePressed() {

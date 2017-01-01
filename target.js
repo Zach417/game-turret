@@ -12,6 +12,7 @@ function Target(x,y) {
   this.show = function () {
     push();
     stroke('yellow');
+    strokeWeight(25);
     point(x,y);
     pop();
   }
