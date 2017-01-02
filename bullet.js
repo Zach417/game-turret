@@ -1,15 +1,22 @@
 function Bullet (x,y,velY,angleDegrees) {
-  this.bounced = false;
+  this.bounced = {
+    wall: -1,
+    timestamp: new Date(),
+  };
   this.pos = createVector(x, y);
   this.acc = createVector(0, 0);
   this.vel = createVector(0, velY);
-  this.vel.angle = radians(angleDegrees);
   this.vel.rotate(radians(angleDegrees));
 
-  this.bounce = function () {
-    if (!this.bounced) {
+  this.bounce = function (wall) {
+    var currentTime = new Date();
+    var length = (currentTime - this.bounced.timestamp);
+    if (this.bounced.wall != wall || length > 200) {
       this.vel.x = -this.vel.x;
-      this.bounced = true;
+      this.bounced = {
+        wall: wall,
+        timestamp: new Date(),
+      };
     }
   }
 
@@ -24,7 +31,7 @@ function Bullet (x,y,velY,angleDegrees) {
   }
 
   this.update = function () {
-    //this.vel.mult(0.93);
+    this.applyGravity();
     this.vel.add(this.acc);
     this.pos.add(this.vel);
     this.acc.mult(0);
@@ -32,5 +39,16 @@ function Bullet (x,y,velY,angleDegrees) {
 
   this.show = function () {
     point(this.pos.x, this.pos.y);
+  }
+
+  this.clone = function () {
+    var that = this;
+    var temp = function temporary() { return that.apply(this, arguments); };
+      for(var key in this) {
+        if (this.hasOwnProperty(key)) {
+            temp[key] = this[key];
+        }
+    }
+    return temp;
   }
 }
