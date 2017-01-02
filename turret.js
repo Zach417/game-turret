@@ -9,15 +9,30 @@ function Turret() {
     this.bullets.push(bullet);
   }
 
+  this.clean = function () {
+    for (var i = this.bullets.length - 1; i >= 0; i--) {
+      var bullet = this.bullets[i];
+      var del = false;
+      del = del || bullet.pos.x > width;
+      del = del || bullet.pos.x < 0;
+      del = del || bullet.pos.y > height;
+      if (del) {
+        this.bullets.splice(i,1);
+      }
+    }
+  }
+
   this.update = function () {
     for (var i = 0; i < this.bullets.length; i++) {
       var bullet = this.bullets[i];
 
-      if (wall.contains(bullet.pos.x, bullet.pos.y)) {
-        bullet.bounce();
+      // for loop is too expensive here
+      if (walls[0].hits(bullet)) {
+        bullet.bounce(0);
+      } else if (walls[1].hits(bullet)) {
+        bullet.bounce(1);
       }
 
-      bullet.applyGravity();
       bullet.update();
     }
   }
@@ -30,7 +45,7 @@ function Turret() {
     //turret gun
     push();
     rectMode(CENTER);
-    translate(this.pos.x+20,this.pos.y+20);
+    translate(this.pos.x+floor(this.size/2),this.pos.y+floor(this.size/2));
     rotate(radians(this.angle));
     rect(0,0,20,100);
     pop();
