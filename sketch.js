@@ -1,13 +1,14 @@
 var turret;
 var gravity;
 var target;
-var wall;
+var walls = [];
 
 function setup() {
-  createCanvas(500,500);
+  createCanvas(800,600);
 
   turret = new Turret();
-  wall = new Wall(floor(width/2) - 20, floor(height/2), 40, floor(height/2));
+  walls.push(new Wall(floor(width/2) - 20, floor(height/2), 40, floor(height/2)));
+  walls.push(new Wall(width - 40, 0, 40, height));
   gravity = createVector(0, 0.1);
 
   createTarget();
@@ -18,6 +19,8 @@ function draw() {
   strokeWeight(8);
   stroke(255);
 
+  drawTurretPower();
+
   for (var i = this.turret.bullets.length-1; i >= 0; i--) {
     var bullet = this.turret.bullets[i];
     if (target.hit(bullet.pos.x, bullet.pos.y)) {
@@ -26,26 +29,48 @@ function draw() {
     }
   }
 
+  turret.clean();
   turret.update();
+  target.update();
   turret.show();
   target.show();
-  wall.show();
+
+  for (var i = 0; i < walls.length; i++) {
+    walls[i].show();
+  }
 }
 
 function createTarget() {
-  target = new Target(random(floor(width/2),width),random(50,height));
-  if (wall.contains(target.x, target.y)) {
-    createTarget();
+  target = new Target(random(floor(width/2)+20,width-20),random(50,height));
+  for (var i = 0; i < walls.length; i++) {
+    if (walls[i].contains(target.x, target.y)) {
+      createTarget();
+      break;
+    }
   }
 }
 
 function mousePressed() {
-  var maxC = 400;
   var maxV = -35;
+  var power = getTurretPower();
+  turret.fire(power*maxV);
+}
 
-  var x1 = 0;
+function drawTurretPower() {
+  var power = getTurretPower();
+  push()
+  fill('red');
+  noStroke();
+  rect(0,0,width*power,10);
+  pop();
+}
+
+function getTurretPower() {
+  var maxC = 400;
+
+  var x1 = turret.pos.x;
   var x2 = mouseX;
-  var y1 = -height;
+  var y1 = -turret.pos.y;
   var y2 = mouseY;
   var a = x2 - x1;
   var b = -y1 - y2;
@@ -55,12 +80,12 @@ function mousePressed() {
     c = maxC;
   }
 
-  turret.fire((c/maxC)*maxV);
+  return c/maxC;
 }
 
 function mouseMoved() {
-  var deltaX = 0 - mouseX;
-  var deltaY = height - mouseY;
+  var deltaX = turret.pos.x - mouseX;
+  var deltaY = turret.pos.y - mouseY;
   var thetaRadians = atan2(-deltaX, deltaY);
   var thetaDegrees = degrees(thetaRadians);
   turret.angle = thetaDegrees;
